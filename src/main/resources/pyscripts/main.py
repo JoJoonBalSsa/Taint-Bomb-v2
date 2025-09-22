@@ -1,6 +1,6 @@
-from taintAnalysis import TaintAnalysis
-from analysisResultManager import AnalysisResultManager
-from makeMD import MakeMD
+from taintAnalyzer import TaintAnalysis
+from resultManager import AnalysisResultManager
+from reportGenerator import MakeMD
 from datetime import datetime
 
 def create_result(output_folder, flows):
