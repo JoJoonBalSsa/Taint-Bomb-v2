@@ -1,0 +1,9 @@
+# 기존 Taint Bomb 의존성
+javalang>=0.13.0
+
+# Claude 통합을 위한 새로운 의존성
+anthropic>=0.25.0
+python-dotenv>=1.0.0
+
+# 기타 유용한 라이브러리
+requests>=2.31.0
