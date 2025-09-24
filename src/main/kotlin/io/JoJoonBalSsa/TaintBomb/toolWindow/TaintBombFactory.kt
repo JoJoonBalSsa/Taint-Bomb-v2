@@ -10,6 +10,7 @@ import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.content.ContentFactory
 import io.JoJoonBalSsa.TaintBomb.MyBundle
 import io.JoJoonBalSsa.TaintBomb.services.TaintBombService
+import io.JoJoonBalSsa.TaintBomb.settings.TaintBombSettings
 import javax.swing.JButton
 import javax.swing.JTextArea
 
@@ -17,18 +18,25 @@ import javax.swing.BoxLayout
 import javax.swing.Box
 import java.awt.Component
 import java.awt.Dimension
+import javax.swing.BorderFactory
+import javax.swing.JCheckBox
 import javax.swing.JSeparator
 
 class TaintBombFactory : ToolWindowFactory {
-    
+
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
         val taintBomb = TaintBomb(toolWindow)
 
-
-
+        // Execute Tab
         var content = ContentFactory.getInstance().createContent(taintBomb.getContent(), "Execute Tab", false)
         toolWindow.contentManager.addContent(content)
 
+        // Configuration Tab
+        val configPanel = ConfigurationPanel()
+        content = ContentFactory.getInstance().createContent(configPanel.getContent(), "Configuration", false)
+        toolWindow.contentManager.addContent(content)
+
+        // Log Tab
         val consolePanel = JTextArea()
         val scrollPane = JBScrollPane(consolePanel)
         content = ContentFactory.getInstance().createContent(scrollPane, "Log", false)
@@ -86,6 +94,101 @@ class TaintBombFactory : ToolWindowFactory {
 
             MyConsoleViewer.setConsole(consolePanel)
             add(scrollPane)
+        }
+    }
+
+    class ConfigurationPanel {
+        private val settings = TaintBombSettings.getInstance()
+
+        fun getContent() = JBPanel<JBPanel<*>>().apply {
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
+
+            val titleLabel = JBLabel("Obfuscation Features Configuration").apply {
+                alignmentX = Component.CENTER_ALIGNMENT
+                font = font.deriveFont(16f)
+            }
+
+            val separator = JSeparator().apply {
+                alignmentX = Component.CENTER_ALIGNMENT
+                maximumSize = Dimension(300, 1)
+            }
+
+            val removeCommentsCheckBox = JCheckBox("Remove Comments", settings.enableRemoveComments).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableRemoveComments = isSelected
+                }
+            }
+
+            val stringObfuscateCheckBox = JCheckBox("String Obfuscation", settings.enableStringObfuscate).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableStringObfuscate = isSelected
+                }
+            }
+
+            val levelObfuscateCheckBox = JCheckBox("Level Obfuscation", settings.enableLevelObfuscate).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableLevelObfuscate = isSelected
+                }
+            }
+
+            val identifierObfuscateCheckBox = JCheckBox("Identifier Obfuscation", settings.enableIdentifierObfuscate).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableIdentifierObfuscate = isSelected
+                }
+            }
+
+            val mainAnalysisCheckBox = JCheckBox("Code Analysis (main)", settings.enableMainAnalysis).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableMainAnalysis = isSelected
+                }
+            }
+
+            val descriptionArea = JTextArea().apply {
+                text = """
+                    Enable or disable specific obfuscation features:
+                    
+                    • Remove Comments: Strips all comments from source code
+                    • String Obfuscation: Encrypts string literals
+                    • Level Obfuscation: Applies complexity-based obfuscation
+                    • Identifier Obfuscation: Renames variables and methods
+                    • Code Analysis: Performs code analysis for optimization
+                """.trimIndent()
+                isEditable = false
+                lineWrap = true
+                wrapStyleWord = true
+                background = parent?.background
+                alignmentX = Component.LEFT_ALIGNMENT
+            }
+
+            val descriptionScrollPane = JBScrollPane(descriptionArea).apply {
+                preferredSize = Dimension(400, 150)
+                alignmentX = Component.LEFT_ALIGNMENT
+            }
+
+            add(Box.createVerticalStrut(15))
+            add(titleLabel)
+            add(Box.createVerticalStrut(10))
+            add(separator)
+            add(Box.createVerticalStrut(15))
+            add(removeCommentsCheckBox)
+            add(Box.createVerticalStrut(8))
+            add(stringObfuscateCheckBox)
+            add(Box.createVerticalStrut(8))
+            add(levelObfuscateCheckBox)
+            add(Box.createVerticalStrut(8))
+            add(identifierObfuscateCheckBox)
+            add(Box.createVerticalStrut(8))
+            add(mainAnalysisCheckBox)
+            add(Box.createVerticalStrut(15))
+            add(descriptionScrollPane)
+            add(Box.createVerticalGlue())
+
+            border = BorderFactory.createEmptyBorder(10, 20, 10, 20)
         }
     }
 }
