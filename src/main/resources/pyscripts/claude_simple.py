@@ -18,6 +18,7 @@ def send_to_claude(priority_flow):
 
     # API 키 확인
     api_key = os.getenv('CLAUDE_API_KEY')
+
     if not api_key:
         print("CLAUDE_API_KEY 환경변수를 설정하세요")
         return None
@@ -42,8 +43,8 @@ def send_to_claude(priority_flow):
 """
 
         response = client.messages.create(
-            model="claude-3-5-sonnet-20241022",
-            max_tokens=2000,
+            model="claude-sonnet-4-20250514",
+            max_tokens=1024,
             messages=[{"role": "user", "content": prompt}]
         )
 
