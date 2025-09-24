@@ -2,18 +2,11 @@ from taintAnalyzer import TaintAnalysis
 from resultManager import AnalysisResultManager
 from reportGenerator import MakeMD
 from datetime import datetime
-import sys
-import os
 
-# Claude integration imports
-sys.path.append(os.path.join(os.path.dirname(__file__), 'integration'))
 try:
-    from configManager import ConfigManager
-    from claudeIntegrator import ClaudeIntegrator
-    from responseProcessor import ResponseProcessor
+    from claude_simple import send_to_claude
     CLAUDE_AVAILABLE = True
-except ImportError as e:
-    print(f"Claude integration 모듈을 불러올 수 없습니다: {e}")
+except ImportError:
     CLAUDE_AVAILABLE = False
 
 def create_result(output_folder, flows):
@@ -68,71 +61,21 @@ def __analyze_method(output_folder, tainted):
     return json_file_path  # JSON 파일 경로 반환
 
 
-def __run_claude_analysis(json_file_path, output_folder):
+def __run_claude_analysis(priority_flow, output_folder):
     """Claude 분석 실행"""
     if not CLAUDE_AVAILABLE:
-        print("Claude 분석을 사용할 수 없습니다. 필요한 모듈이 설치되지 않았습니다.")
         return
 
     try:
-        print("Claude 보안 분석을 시작합니다...")
-
-        # 설정 매니저 초기화
-        config_manager = ConfigManager()
-
-        # 설정 유효성 검사
-        config_issues = config_manager.validate_config()
-        if config_issues:
-            print("Claude 설정에 문제가 있습니다:")
-            for issue in config_issues:
-                print(f"  - {issue}")
-
-            # Claude 분석이 비활성화되어 있거나 API 키가 없는 경우
-            if not config_manager.is_claude_enabled():
-                print("Claude 분석이 비활성화되어 있습니다. 기본 분석만 수행됩니다.")
-                return
-
-        # Claude 통합기 초기화
-        claude_integrator = ClaudeIntegrator(config_manager)
-
-        # 분석 실행
-        success = claude_integrator.analyze_taint_flows(json_file_path, output_folder)
-
-        if success:
-            print("Claude 분석이 성공적으로 완료되었습니다.")
-
-            # 응답 처리
-            response_processor = ResponseProcessor(config_manager)
-            claude_results_file = os.path.join(output_folder, 'claude_analysis_results.json')
-
-            if os.path.exists(claude_results_file):
-                print("Claude 분석 결과를 처리합니다...")
-                processed_results = response_processor.process_analysis_results(
-                    claude_results_file, output_folder
-                )
-
-                if 'error' not in processed_results:
-                    print("Claude 분석 결과 처리가 완료되었습니다.")
-
-                    # 요약 보고서 생성
-                    summary = claude_integrator.get_analysis_summary(claude_results_file)
-                    if summary:
-                        summary_file = os.path.join(output_folder, 'claude_executive_summary.md')
-                        with open(summary_file, 'w', encoding='utf-8') as f:
-                            f.write("# Claude 보안 분석 요약\n\n")
-                            f.write(summary)
-                        print(f"경영진 요약 보고서가 생성되었습니다: {summary_file}")
-                else:
-                    print(f"결과 처리 중 오류: {processed_results['error']}")
-            else:
-                print("Claude 분석 결과 파일을 찾을 수 없습니다.")
-        else:
-            print("Claude 분석 중 오류가 발생했습니다.")
-
+        result = send_to_claude(priority_flow)
+        if result:
+            # 결과 저장
+            output_file = output_folder + "/claude_analysis.txt"
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(result)
+            print(f"Claude 분석 결과 저장: {output_file}")
     except Exception as e:
-        print(f"Claude 분석 실행 중 예외 발생: {e}")
-        import traceback
-        traceback.print_exc()
+        print(f"Claude 분석 오류: {e}")
 
 
 def main(output_folder) :
@@ -158,11 +101,13 @@ def main(output_folder) :
         create_result(output_folder, tainted.flows)
         json_file_path = __analyze_method(output_folder, tainted)
 
+        # Claude 분석 실행
+        __run_claude_analysis(priority_flow, output_folder)
+
         make_md = MakeMD(output_folder + "/result.txt", output_folder + "/analysis_result.md", priority_flow)
         make_md.make_md_file()
 
-        # Claude 분석 실행
-        __run_claude_analysis(json_file_path, output_folder)
+
 
 
 if __name__ == '__main__':
