@@ -3,6 +3,7 @@ package io.JoJoonBalSsa.TaintBomb.services
 import com.intellij.openapi.progress.ProgressIndicator
 import io.JoJoonBalSsa.TaintBomb.toolWindow.MyConsoleLogger
 import io.JoJoonBalSsa.TaintBomb.toolWindow.MyConsoleViewer
+import io.JoJoonBalSsa.TaintBomb.settings.TaintBombSettings
 import java.io.*
 import java.util.concurrent.TimeUnit
 
@@ -13,8 +14,9 @@ class ManageObfuscate(
     manageHash: ManageHash,
     venvPath: String,
     osName: String,
-    private val indicator: ProgressIndicator
-) {
+    private val indicator: ProgressIndicator) {
+    private val settings = TaintBombSettings.getInstance()
+
     init {
         indicator.text = "Checking Java code syntax..."
         manageHash.compareFileHashes(0.25)
@@ -32,31 +34,58 @@ class ManageObfuscate(
     }
 
     private fun executePythonScript(venvPath : String, osName : String) {
-        indicator.text = "Removing comments..."
-        MyConsoleViewer.println("Removing comments...")
-        runPythonScript(venvPath, "removeComments", outputFolder, 0.35)
-        //checkJavaSyntax(venvPath, outputFolder, 0.4)
+        var currentFraction = 0.35
+        val stepSize = 0.08
 
-        indicator.text = "Encrypting strings..."
-        MyConsoleViewer.println("Encrypting strings...")
-        runStringObfuscate(venvPath, "stringObfuscate", outputFolder, osName, 0.45)
-        //checkJavaSyntax(venvPath, outputFolder, 0.5)
+        if (settings.enableRemoveComments) {
+            indicator.text = "Removing comments..."
+            MyConsoleViewer.println("Removing comments...")
+            runPythonScript(venvPath, "removeComments", outputFolder, currentFraction)
+            currentFraction += stepSize
+        } else {
+            MyConsoleViewer.println("Skipping remove comments (disabled in configuration)")
+            MyConsoleLogger.logPrint("Skipping remove comments - disabled")
+        }
 
-        indicator.text = "Analysing code..."
-        MyConsoleViewer.println("Analysing code...")
-        runPythonScript(venvPath, "main", outputFolder, 0.55)
+        if (settings.enableStringObfuscate) {
+            indicator.text = "Encrypting strings..."
+            MyConsoleViewer.println("Encrypting strings...")
+            runStringObfuscate(venvPath, "stringObfuscate", outputFolder, osName, currentFraction)
+            currentFraction += stepSize
+        } else {
+            MyConsoleViewer.println("Skipping string obfuscation (disabled in configuration)")
+            MyConsoleLogger.logPrint("Skipping string obfuscation - disabled")
+        }
 
-        indicator.text = "Level obfuscation activated..."
-        MyConsoleViewer.println("Level obfuscation activated...")
-        runPythonScript(venvPath, "levelObfuscate", outputFolder, 0.65)
-        // checkJavaSyntax(venvPath, outputFolder, 0.7)
+        if (settings.enableMainAnalysis) {
+            indicator.text = "Analysing code..."
+            MyConsoleViewer.println("Analysing code...")
+            runPythonScript(venvPath, "main", outputFolder, currentFraction)
+            currentFraction += stepSize
+        } else {
+            MyConsoleViewer.println("Skipping code analysis (disabled in configuration)")
+            MyConsoleLogger.logPrint("Skipping main analysis - disabled")
+        }
 
-        indicator.text = "Identifier obfuscating..."
-        MyConsoleViewer.println("Identifier obfuscating...")
-        runPythonScript(venvPath, "identifierObfuscate", outputFolder, 0.75)
-        //checkJavaSyntax(venvPath, outputFolder, 0.8)
+        if (settings.enableLevelObfuscate) {
+            indicator.text = "Level obfuscation activated..."
+            MyConsoleViewer.println("Level obfuscation activated...")
+            runPythonScript(venvPath, "levelObfuscate", outputFolder, currentFraction)
+            currentFraction += stepSize
+        } else {
+            MyConsoleViewer.println("Skipping level obfuscation (disabled in configuration)")
+            MyConsoleLogger.logPrint("Skipping level obfuscation - disabled")
+        }
+
+        if (settings.enableIdentifierObfuscate) {
+            indicator.text = "Identifier obfuscating..."
+            MyConsoleViewer.println("Identifier obfuscating...")
+            runPythonScript(venvPath, "identifierObfuscate", outputFolder, currentFraction)
+        } else {
+            MyConsoleViewer.println("Skipping identifier obfuscation (disabled in configuration)")
+            MyConsoleLogger.logPrint("Skipping identifier obfuscation - disabled")
+        }
     }
-
     private fun checkJavaSyntax(venvPath:String, javaFilesPath: String, fractionValue: Double) {
         indicator.fraction = fractionValue
 
