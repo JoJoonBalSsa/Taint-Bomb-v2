@@ -10,10 +10,11 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 @Service
 class TaintBombSettings : PersistentStateComponent<TaintBombSettings> {
     var enableRemoveComments: Boolean = true
-    var enableStringObfuscate: Boolean = true
-    var enableLevelObfuscate: Boolean = true
-    var enableIdentifierObfuscate: Boolean = true
-    var enableMainAnalysis: Boolean = true
+    var enableStringEncryption: Boolean = true
+    var enableMethodSplitting: Boolean = true
+    var enableInsertDummyCode: Boolean = true
+    var enableOperatorObfuscation: Boolean = true
+    var enableIdentifierObfuscation: Boolean = true
 
     companion object {
         fun getInstance(): TaintBombSettings {

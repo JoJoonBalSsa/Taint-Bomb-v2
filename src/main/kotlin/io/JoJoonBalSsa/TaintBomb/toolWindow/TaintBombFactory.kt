@@ -28,7 +28,7 @@ class TaintBombFactory : ToolWindowFactory {
         val taintBomb = TaintBomb(toolWindow)
 
         // Execute Tab
-        var content = ContentFactory.getInstance().createContent(taintBomb.getContent(), "Execute Tab", false)
+        var content = ContentFactory.getInstance().createContent(taintBomb.getContent(), "Execution", false)
         toolWindow.contentManager.addContent(content)
 
         // Configuration Tab
@@ -39,7 +39,7 @@ class TaintBombFactory : ToolWindowFactory {
         // Log Tab
         val consolePanel = JTextArea()
         val scrollPane = JBScrollPane(consolePanel)
-        content = ContentFactory.getInstance().createContent(scrollPane, "Log", false)
+        content = ContentFactory.getInstance().createContent(scrollPane, "Logs", false)
         MyConsoleLogger.setConsole(consolePanel)
         toolWindow.contentManager.addContent(content)
     }
@@ -120,43 +120,44 @@ class TaintBombFactory : ToolWindowFactory {
                 }
             }
 
-            val stringObfuscateCheckBox = JCheckBox("String Obfuscation", settings.enableStringObfuscate).apply {
+            val stringEncryptionCheckBox = JCheckBox("String Encryption", settings.enableStringEncryption).apply {
                 alignmentX = Component.LEFT_ALIGNMENT
                 addActionListener {
-                    settings.enableStringObfuscate = isSelected
+                    settings.enableStringEncryption = isSelected
                 }
             }
 
-            val levelObfuscateCheckBox = JCheckBox("Level Obfuscation", settings.enableLevelObfuscate).apply {
+            val identifierObfuscationCheckBox = JCheckBox("Identifier Obfuscation", settings.enableIdentifierObfuscation).apply {
                 alignmentX = Component.LEFT_ALIGNMENT
                 addActionListener {
-                    settings.enableLevelObfuscate = isSelected
+                    settings.enableIdentifierObfuscation = isSelected
                 }
             }
 
-            val identifierObfuscateCheckBox = JCheckBox("Identifier Obfuscation", settings.enableIdentifierObfuscate).apply {
+            val operatorObfuscationCheckBox = JCheckBox("Operator Obfuscation", settings.enableOperatorObfuscation).apply {
                 alignmentX = Component.LEFT_ALIGNMENT
                 addActionListener {
-                    settings.enableIdentifierObfuscate = isSelected
+                    settings.enableOperatorObfuscation = isSelected
                 }
             }
 
-            val mainAnalysisCheckBox = JCheckBox("Code Analysis (main)", settings.enableMainAnalysis).apply {
+            val methodSplittingCheckBox = JCheckBox("Method Splitting", settings.enableMethodSplitting).apply {
                 alignmentX = Component.LEFT_ALIGNMENT
                 addActionListener {
-                    settings.enableMainAnalysis = isSelected
+                    settings.enableMethodSplitting = isSelected
+                }
+            }
+
+            val insertDummyCodeCheckBox = JCheckBox("Inserting Dummy codes", settings.enableInsertDummyCode).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                addActionListener {
+                    settings.enableInsertDummyCode = isSelected
                 }
             }
 
             val descriptionArea = JTextArea().apply {
                 text = """
-                    Enable or disable specific obfuscation features:
-                    
-                    • Remove Comments: Strips all comments from source code
-                    • String Obfuscation: Encrypts string literals
-                    • Level Obfuscation: Applies complexity-based obfuscation
-                    • Identifier Obfuscation: Renames variables and methods
-                    • Code Analysis: Performs code analysis for optimization
+                    checkbox explanation will be added later.
                 """.trimIndent()
                 isEditable = false
                 lineWrap = true
@@ -177,13 +178,15 @@ class TaintBombFactory : ToolWindowFactory {
             add(Box.createVerticalStrut(15))
             add(removeCommentsCheckBox)
             add(Box.createVerticalStrut(8))
-            add(stringObfuscateCheckBox)
+            add(stringEncryptionCheckBox)
             add(Box.createVerticalStrut(8))
-            add(levelObfuscateCheckBox)
+            add(identifierObfuscationCheckBox)
             add(Box.createVerticalStrut(8))
-            add(identifierObfuscateCheckBox)
+            add(operatorObfuscationCheckBox)
             add(Box.createVerticalStrut(8))
-            add(mainAnalysisCheckBox)
+            add(methodSplittingCheckBox)
+            add(Box.createVerticalStrut(8))
+            add(insertDummyCodeCheckBox)
             add(Box.createVerticalStrut(15))
             add(descriptionScrollPane)
             add(Box.createVerticalGlue())
