@@ -47,7 +47,7 @@ class ManageObfuscate(
             MyConsoleLogger.logPrint("Skipping remove comments - disabled")
         }
 
-        if (settings.enableStringObfuscate) {
+        if (settings.enableStringEncryption) {
             indicator.text = "Encrypting strings..."
             MyConsoleViewer.println("Encrypting strings...")
             runStringObfuscate(venvPath, "stringObfuscate", outputFolder, osName, currentFraction)
@@ -57,27 +57,8 @@ class ManageObfuscate(
             MyConsoleLogger.logPrint("Skipping string obfuscation - disabled")
         }
 
-        if (settings.enableMainAnalysis) {
-            indicator.text = "Analysing code..."
-            MyConsoleViewer.println("Analysing code...")
-            runPythonScript(venvPath, "main", outputFolder, currentFraction)
-            currentFraction += stepSize
-        } else {
-            MyConsoleViewer.println("Skipping code analysis (disabled in configuration)")
-            MyConsoleLogger.logPrint("Skipping main analysis - disabled")
-        }
 
-        if (settings.enableLevelObfuscate) {
-            indicator.text = "Level obfuscation activated..."
-            MyConsoleViewer.println("Level obfuscation activated...")
-            runPythonScript(venvPath, "levelObfuscate", outputFolder, currentFraction)
-            currentFraction += stepSize
-        } else {
-            MyConsoleViewer.println("Skipping level obfuscation (disabled in configuration)")
-            MyConsoleLogger.logPrint("Skipping level obfuscation - disabled")
-        }
-
-        if (settings.enableIdentifierObfuscate) {
+        if (settings.enableIdentifierObfuscation) {
             indicator.text = "Identifier obfuscating..."
             MyConsoleViewer.println("Identifier obfuscating...")
             runPythonScript(venvPath, "identifierObfuscate", outputFolder, currentFraction)
@@ -86,17 +67,20 @@ class ManageObfuscate(
             MyConsoleLogger.logPrint("Skipping identifier obfuscation - disabled")
         }
     }
-    private fun checkJavaSyntax(venvPath:String, javaFilesPath: String, fractionValue: Double) {
-        indicator.fraction = fractionValue
 
-        val exitCode = runScript(venvPath, "checkJavaSyntax", javaFilesPath)
-
-        if (exitCode != 0) {
-            MyConsoleViewer.println("ObfuscationSyntaxError.")
-            MyConsoleLogger.logPrint("obfuscation syntax error occurred.")
-            throw IOException("obfuscation syntax error occurred.")
-        }
-    }
+    //only for Test
+//
+//    private fun checkJavaSyntax(venvPath:String, javaFilesPath: String, fractionValue: Double) {
+//        indicator.fraction = fractionValue
+//
+//        val exitCode = runScript(venvPath, "checkJavaSyntax", javaFilesPath)
+//
+//        if (exitCode != 0) {
+//            MyConsoleViewer.println("ObfuscationSyntaxError.")
+//            MyConsoleLogger.logPrint("obfuscation syntax error occurred.")
+//            throw IOException("obfuscation syntax error occurred.")
+//        }
+//    }
 
     private fun initCheckJavaSyntax(venvPath:String, javaFilesPath: String, fractionValue: Double) {
         indicator.fraction = fractionValue
