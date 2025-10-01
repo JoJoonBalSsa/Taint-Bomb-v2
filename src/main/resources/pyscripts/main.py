@@ -3,6 +3,12 @@ from resultManager import AnalysisResultManager
 from reportGenerator import MakeMD
 from datetime import datetime
 
+try:
+    from claude_simple import send_to_claude
+    CLAUDE_AVAILABLE = True
+except ImportError:
+    CLAUDE_AVAILABLE = False
+
 def create_result(output_folder, flows):
     path = output_folder + "/taint_result.txt"
     with open(path, 'w', encoding='utf-8') as file:  # 결과 파일 생성
@@ -52,6 +58,25 @@ def __analyze_method(output_folder, tainted):
             result.append(sensitivity, current_path, method_name, tree_position, cut_tree, source_code)
 
     result.save_to_json()  # 결과를 JSON 파일로 저장
+    return json_file_path  # JSON 파일 경로 반환
+
+
+def __run_claude_analysis(priority_flow, output_folder):
+    """Claude 분석 실행"""
+    if not CLAUDE_AVAILABLE:
+        return
+
+    try:
+        result = send_to_claude(priority_flow)
+        if result:
+            # 결과 저장
+            output_file = output_folder + "/claude_analysis.txt"
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(result)
+            print(f"Claude 분석 결과 저장: {output_file}")
+    except Exception as e:
+        print(f"Claude 분석 오류: {e}")
+
 
 def main(output_folder) :
     tainted = TaintAnalysis(output_folder)
@@ -74,10 +99,15 @@ def main(output_folder) :
     else:
         print_result(priority_flow)
         create_result(output_folder, tainted.flows)
-        __analyze_method(output_folder, tainted)
+        json_file_path = __analyze_method(output_folder, tainted)
+
+        # Claude 분석 실행
+        __run_claude_analysis(priority_flow, output_folder)
 
         make_md = MakeMD(output_folder + "/taint_result.txt", output_folder + "/analysis_result.md", priority_flow)
         make_md.make_md_file()
+
+
 
 
 if __name__ == '__main__':
