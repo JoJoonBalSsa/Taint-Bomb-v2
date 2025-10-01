@@ -16,6 +16,8 @@ class TaintBombSettings : PersistentStateComponent<TaintBombSettings> {
     var enableOperatorObfuscation: Boolean = true
     var enableIdentifierObfuscation: Boolean = true
 
+    var apiKey: String = ""
+
     companion object {
         fun getInstance(): TaintBombSettings {
             return service<TaintBombSettings>()

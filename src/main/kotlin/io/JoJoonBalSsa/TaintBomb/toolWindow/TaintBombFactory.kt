@@ -20,7 +20,9 @@ import java.awt.Component
 import java.awt.Dimension
 import javax.swing.BorderFactory
 import javax.swing.JCheckBox
+import javax.swing.JLabel
 import javax.swing.JSeparator
+import javax.swing.JTextField
 
 class TaintBombFactory : ToolWindowFactory {
 
@@ -103,6 +105,25 @@ class TaintBombFactory : ToolWindowFactory {
         fun getContent() = JBPanel<JBPanel<*>>().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
 
+            val apiKeyLabel = JLabel("API Key:").apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+            }
+
+            val apiKeyField = JTextField(settings.apiKey).apply {
+                alignmentX = Component.LEFT_ALIGNMENT
+                maximumSize = Dimension(Int.MAX_VALUE, preferredSize.height) // 가로로 늘어나도록
+                toolTipText = "Enter API key here"
+                // 입력 시 설정값 업데이트
+                document.addDocumentListener(object : javax.swing.event.DocumentListener {
+                    override fun insertUpdate(e: javax.swing.event.DocumentEvent) = update()
+                    override fun removeUpdate(e: javax.swing.event.DocumentEvent) = update()
+                    override fun changedUpdate(e: javax.swing.event.DocumentEvent) = update()
+                    private fun update() {
+                        settings.apiKey = text
+                    }
+                })
+            }
+
             val titleLabel = JBLabel("Obfuscation Features Configuration").apply {
                 alignmentX = Component.CENTER_ALIGNMENT
                 font = font.deriveFont(16f)
@@ -170,6 +191,12 @@ class TaintBombFactory : ToolWindowFactory {
                 preferredSize = Dimension(400, 150)
                 alignmentX = Component.LEFT_ALIGNMENT
             }
+
+            add(Box.createVerticalStrut(10))
+            add(apiKeyLabel)
+            add(Box.createVerticalStrut(5))
+            add(apiKeyField)
+            add(Box.createVerticalStrut(10))
 
             add(Box.createVerticalStrut(15))
             add(titleLabel)
