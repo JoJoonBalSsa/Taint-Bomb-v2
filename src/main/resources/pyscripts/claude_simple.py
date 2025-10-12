@@ -21,8 +21,11 @@ def send_to_claude(priority_flow):
 
     api_key = os.getenv('CLAUDE_API_KEY')
 
+<<<<<<< HEAD
     
     # 환경변수가 없으면 여기에 직접 입력 (테스트용)
+=======
+>>>>>>> e1928c6d89364a373e500695fc9b7c830b9b1d27
     if not api_key:
         api_key = "여기에-API-키-입력"  # TODO: 실제 키로 교체
 
@@ -180,7 +183,11 @@ Sink (도착점) - 위험한 작업
 
         response = client.messages.create(
             model="claude-sonnet-4-20250514",
+<<<<<<< HEAD
             max_tokens=16000,
+=======
+            max_tokens=1024,
+>>>>>>> e1928c6d89364a373e500695fc9b7c830b9b1d27
             messages=[{"role": "user", "content": prompt}]
         )
 

@@ -10,7 +10,7 @@ except ImportError:
     CLAUDE_AVAILABLE = False
 
 def create_result(output_folder, flows):
-    path = output_folder + "/result.txt"
+    path = output_folder + "/taint_result.txt"
     with open(path, 'w', encoding='utf-8') as file:  # 결과 파일 생성
         for (class_method, var), value in flows.items():
             file.write("Tainted Variable:\n")
@@ -104,7 +104,7 @@ def main(output_folder) :
         # Claude 분석 실행
         __run_claude_analysis(priority_flow, output_folder)
 
-        make_md = MakeMD(output_folder + "/result.txt", output_folder + "/analysis_result.md", priority_flow)
+        make_md = MakeMD(output_folder + "/taint_result.txt", output_folder + "/analysis_result.md", priority_flow)
         make_md.make_md_file()
 
 
