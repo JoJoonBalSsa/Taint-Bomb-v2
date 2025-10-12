@@ -70,7 +70,7 @@ def __run_claude_analysis(priority_flow, output_folder):
         result = send_to_claude(priority_flow)
         if result:
             # 결과 저장
-            output_file = output_folder + "/claude_analysis.txt"
+            output_file = output_folder + "/claude_analysis.md"
             with open(output_file, 'w', encoding='utf-8') as f:
                 f.write(result)
             print(f"Claude 분석 결과 저장: {output_file}")
