@@ -6,26 +6,23 @@ try:
     CLAUDE_AVAILABLE = True
 except ImportError:
     CLAUDE_AVAILABLE = False
-    print("anthropic 라이브러리가 없습니다. pip install anthropic")
+    print("ERROR : Can't find anthropic module.")
 
 
-def send_to_claude(priority_flow):
+def send_to_claude(priority_flow, user_api_key=None):
     """priority_flow를 Claude에게 전달"""
 
     if not CLAUDE_AVAILABLE:
-        print("Claude 사용 불가")
         return None
 
-    # API 키 확인
-    api_key = os.getenv('CLAUDE_API_KEY')
-
-    if not api_key:
-        print("CLAUDE_API_KEY 환경변수를 설정하세요")
+    if not user_api_key:
+        print("ERROR : Can't find user API key.")
+        print("Current api_key:", user_api_key)
         return None
 
     # Claude에 전송
     try:
-        client = anthropic.Anthropic(api_key=api_key)
+        client = anthropic.Anthropic(api_key=user_api_key)
 
         # priority_flow를 문자열로 변환
         flow_text = "\n".join([str(flow) for flow in priority_flow])
