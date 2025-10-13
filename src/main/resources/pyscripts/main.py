@@ -61,16 +61,16 @@ def __analyze_method(output_folder, tainted):
     return json_file_path  # JSON 파일 경로 반환
 
 
-def __run_claude_analysis(priority_flow, output_folder):
+def __run_claude_analysis(priority_flow, output_folder, api_key=None):
     """Claude 분석 실행"""
     if not CLAUDE_AVAILABLE:
         return
 
     try:
-        result = send_to_claude(priority_flow)
+        result = send_to_claude(priority_flow, api_key)
         if result:
             # 결과 저장
-            output_file = output_folder + "/claude_analysis.txt"
+            output_file = output_folder + "/llm_analysis_result.md"
             with open(output_file, 'w', encoding='utf-8') as f:
                 f.write(result)
             print(f"Claude 분석 결과 저장: {output_file}")
@@ -78,7 +78,7 @@ def __run_claude_analysis(priority_flow, output_folder):
         print(f"Claude 분석 오류: {e}")
 
 
-def main(output_folder) :
+def main(output_folder, api_key=None) :
     tainted = TaintAnalysis(output_folder)
     priority_flow = tainted._priority_flow()
 
@@ -102,16 +102,16 @@ def main(output_folder) :
         json_file_path = __analyze_method(output_folder, tainted)
 
         # Claude 분석 실행
-        __run_claude_analysis(priority_flow, output_folder)
+        __run_claude_analysis(priority_flow, output_folder, api_key)
 
         make_md = MakeMD(output_folder + "/taint_result.txt", output_folder + "/analysis_result.md", priority_flow)
         make_md.make_md_file()
-
-
 
 
 if __name__ == '__main__':
     import sys
 
     output_folder = sys.argv[1]
-    main(output_folder)
+    api_key = sys.argv[2]
+    print("api :", api_key)
+    main(output_folder, api_key)
