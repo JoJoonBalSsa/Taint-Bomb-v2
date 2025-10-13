@@ -57,8 +57,8 @@ class MethodSplit:
 
         statements = self.__split_top_level_statements(body)
 
-        var_pattern = re.compile(r'^\s*(\w+)\s+(\w+)\s*=\s*(.+)$')     
-        update_pattern = re.compile(r'^\s*(\w+)\s*=\s*(?![=!])(.*)$')       
+        var_pattern = re.compile(r'^\s*(\w+)\s+(\w+)\s*=\s*(.+)$')
+        update_pattern = re.compile(r'^\s*(\w+)\s*=\s*(?![=!])(.*)$')
 
         local_vars = {}
 
@@ -164,7 +164,7 @@ class MethodSplit:
         header_params = ', '.join([f"{ptype} {pname}" for ptype, pname in param_list])
         modified_method = (
             f"public {'static ' if is_static else ''}{return_type} {method_name}({header_params}) {{\n    "
-            + "\n    ".join(modified_body).rstrip(';')
+            + "\n    ".join(modified_body)
         )
 
         return modified_method, extracted_functions
