@@ -134,12 +134,12 @@ class TaintBombFactory : ToolWindowFactory {
                 maximumSize = Dimension(300, 1)
             }
 
-            val removeCommentsCheckBox = JCheckBox("Remove Comments", settings.enableRemoveComments).apply {
-                alignmentX = Component.LEFT_ALIGNMENT
-                addActionListener {
-                    settings.enableRemoveComments = isSelected
-                }
-            }
+//            val removeCommentsCheckBox = JCheckBox("Remove Comments", settings.enableRemoveComments).apply {
+//                alignmentX = Component.LEFT_ALIGNMENT
+//                addActionListener {
+//                    settings.enableRemoveComments = isSelected
+//                }
+//            }
 
             val stringEncryptionCheckBox = JCheckBox("String Encryption", settings.enableStringEncryption).apply {
                 alignmentX = Component.LEFT_ALIGNMENT
@@ -203,8 +203,8 @@ class TaintBombFactory : ToolWindowFactory {
             add(Box.createVerticalStrut(10))
             add(separator)
             add(Box.createVerticalStrut(15))
-            add(removeCommentsCheckBox)
-            add(Box.createVerticalStrut(8))
+//            add(removeCommentsCheckBox)
+//            add(Box.createVerticalStrut(8))
             add(stringEncryptionCheckBox)
             add(Box.createVerticalStrut(8))
             add(identifierObfuscationCheckBox)

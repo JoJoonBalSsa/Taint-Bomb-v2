@@ -44,7 +44,7 @@ class ManageObfuscate(
         var currentFraction = 0.35
 
         executeOptionalScript(
-            enabled = settings.enableRemoveComments,
+            enabled = true, //settings.enableRemoveComments,
             scriptName = "removeComments",
             displayText = "Removing comments",
             disabledMessage = "remove comments",

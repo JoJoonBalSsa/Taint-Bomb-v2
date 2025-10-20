@@ -9,7 +9,7 @@ import com.intellij.util.xmlb.XmlSerializerUtil
 )
 @Service
 class TaintBombSettings : PersistentStateComponent<TaintBombSettings> {
-    var enableRemoveComments: Boolean = true
+    // var enableRemoveComments: Boolean = true
     var enableStringEncryption: Boolean = true
     var enableMethodSplitting: Boolean = true
     var enableInsertDummyCode: Boolean = true
